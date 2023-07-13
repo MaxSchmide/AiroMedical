@@ -20,19 +20,19 @@ const BeerItem: React.FC<Props> = ({ beer }) => {
 
 	return (
 		<li
-			className={classNames('card', {
+			className={classNames('list__item', {
 				'!bg-amber-300': selectedBeers.includes(beer.id),
 			})}
 			onContextMenu={(e) => handleSelectBeer(e, beer.id)}
 		>
 			<Link to={`/beer/${beer.id}`}>
-				<h5 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
+				<h5 className='mb-2 line-clamp-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
 					{beer.name}
 				</h5>
 			</Link>
 			<button
 				type='button'
-				className={classNames('card__delete', {
+				className={classNames('list__delete', {
 					'!inline-flex': selectedBeers.includes(beer.id),
 				})}
 				data-dismiss-target='#toast-default'
