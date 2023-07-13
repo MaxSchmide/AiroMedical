@@ -10,7 +10,6 @@ interface State {
 	isLoading: boolean;
 	isPending: boolean;
 	isError: boolean;
-	perPage: number;
 	page: number;
 	selectedBeers: number[];
 	getInitialBeers: (page?: number) => Promise<void>;
@@ -23,7 +22,6 @@ interface State {
 const useBeersStore = create<State, [['zustand/devtools', State]]>(
 	devtools((set, get) => ({
 		beers: [],
-		perPage: 15,
 		page: 1,
 		isLoading: false,
 		isPending: false,
