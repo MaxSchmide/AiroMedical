@@ -69,7 +69,7 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
       try {
         const beers = get().beers;
 
-        if (beers.length === 15) {
+        if (beers.length <= 15) {
           const nextPage = get().page + 1;
           const { data } = await fetchData(nextPage);
 
