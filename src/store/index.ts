@@ -11,11 +11,13 @@ interface State {
   isError: boolean;
   page: number;
   selectedBeers: number[];
+  prevBeersIds: number[];
   getInitialBeers: (page?: number) => Promise<void>;
-  getBeerById: (id: number) => void;
+  getBeerById: (beerId: number) => void;
   toggleSelectBeer: (beerId: number) => void;
   deleteBeerById: () => void;
   getNextPageData: () => Promise<void>;
+  getPrevPageData: () => void;
 }
 
 const useBeersStore = create<State, [['zustand/devtools', State]]>(
@@ -27,9 +29,10 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
     beerToView: null,
     isError: false,
     selectedBeers: [],
+    prevBeersIds: [],
 
     getInitialBeers: async () => {
-      set({ isLoading: true });
+      set({ isLoading: true, isError: false });
       try {
         const response = await fetchData(1);
         set({ beers: response.data });
@@ -41,12 +44,17 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
       }
     },
 
-    getBeerById: (id: number) => {
+    getBeerById: (beerId: number) => {
       set({ isLoading: true });
-      fetchDataById(id)
-        .then(({ data }) => set({ beerToView: data[0] }))
-        .catch(() => set({ isError: true }))
-        .finally(() => set({ isLoading: false }));
+      const beers = get().beers;
+
+      const findedBeer = beers.find(({ id }) => id === beerId) || null;
+
+      if (findedBeer === null) {
+        set({ isError: true, isLoading: false });
+        return;
+      }
+      set({ beerToView: findedBeer, isLoading: false });
     },
 
     toggleSelectBeer: (beerId: number) => {
@@ -81,10 +89,41 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
           });
         }
 
+        const first5Ids = get()
+          .beers.slice(0, 5)
+          .map(({ id }) => id);
+
         const withoutFirst5 = get().beers.slice(5, get().beers.length);
 
-        set({ beers: withoutFirst5 });
+        set({
+          beers: withoutFirst5,
+          prevBeersIds: [...get().prevBeersIds, ...first5Ids],
+        });
       } catch (e) {
+        set({ isError: true });
+      } finally {
+        set({ isPending: false });
+      }
+    },
+
+    getPrevPageData: async () => {
+      set({ isPending: true });
+      const removed = get().prevBeersIds;
+
+      if (!removed.length) {
+        return;
+      }
+
+      try {
+        const beersToFetch = removed.splice(-5);
+        set({ prevBeersIds: removed });
+
+        const beersPromises = beersToFetch.map((id) => fetchDataById(id));
+
+        const prevBeers = await Promise.all(beersPromises);
+
+        set({ beers: [...prevBeers, ...get().beers] });
+      } catch (error) {
         set({ isError: true });
       } finally {
         set({ isPending: false });

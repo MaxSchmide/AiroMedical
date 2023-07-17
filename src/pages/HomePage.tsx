@@ -5,8 +5,9 @@ import useBeersStore from '../store';
 
 const HomePage: React.FC = () => {
   const {
-    getInitialBeers: getInitialBeers,
+    getInitialBeers,
     getNextPageData,
+    getPrevPageData,
     isLoading,
     isError,
   } = useBeersStore();
@@ -16,6 +17,12 @@ const HomePage: React.FC = () => {
     const bottom =
       listRef.current!.scrollHeight - listRef.current!.scrollTop ===
       listRef.current!.clientHeight;
+    const top = listRef.current!.scrollTop === 0;
+
+    if (top) {
+      getPrevPageData();
+    }
+
     if (bottom) {
       getNextPageData();
     }

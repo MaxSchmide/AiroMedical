@@ -9,4 +9,5 @@ export const fetchData = (page: number) =>
     },
   });
 
-export const fetchDataById = (id: number) => axios.get(URL + id);
+export const fetchDataById = (id: number) =>
+  axios.get(URL + id).then((res) => res.data[0]);
