@@ -7,7 +7,8 @@ interface State {
   beers: Beer[];
   beerToView: Beer | null;
   isLoading: boolean;
-  isPending: boolean;
+  isNextPending: boolean;
+  isPrevPending: boolean;
   isError: boolean;
   page: number;
   selectedBeers: number[];
@@ -25,7 +26,8 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
     beers: [],
     page: 1,
     isLoading: false,
-    isPending: false,
+    isNextPending: false,
+    isPrevPending: false,
     beerToView: null,
     isError: false,
     selectedBeers: [],
@@ -75,7 +77,7 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
     },
 
     getNextPageData: async () => {
-      set({ isPending: true });
+      set({ isNextPending: true });
       try {
         const beers = get().beers;
 
@@ -102,12 +104,12 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
       } catch (e) {
         set({ isError: true });
       } finally {
-        set({ isPending: false });
+        set({ isNextPending: false });
       }
     },
 
     getPrevPageData: async () => {
-      set({ isPending: true });
+      set({ isPrevPending: true });
       const removed = get().prevBeersIds;
 
       if (!removed.length) {
@@ -126,7 +128,7 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
       } catch (error) {
         set({ isError: true });
       } finally {
-        set({ isPending: false });
+        set({ isPrevPending: false });
       }
     },
   }))
