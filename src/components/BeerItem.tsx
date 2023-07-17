@@ -1,15 +1,15 @@
-import React from 'react';
-import { Beer } from '../models/Beer.model';
-import { Link } from 'react-router-dom';
-import useBeersStore from '../store';
 import classNames from 'classnames';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Beer } from '../models/Beer.model';
+import useBeersStore from '../store';
 
 type Props = {
   beer: Beer;
 };
 
 const BeerItem: React.FC<Props> = ({ beer }) => {
-  const { toggleSelectBeer, selectedBeers, deleteBeerById } = useBeersStore();
+  const { toggleSelectBeer, selectedBeers } = useBeersStore();
 
   const handleSelectBeer = (
     event: React.MouseEvent<HTMLElement>,
@@ -31,32 +31,6 @@ const BeerItem: React.FC<Props> = ({ beer }) => {
           {beer.name}
         </h5>
       </Link>
-      <button
-        type='button'
-        className={classNames('list__delete', {
-          '!inline-flex': selectedBeers.includes(beer.id),
-        })}
-        data-dismiss-target='#toast-default'
-        aria-label='Close'
-        onClick={deleteBeerById}
-      >
-        <span className='sr-only'>Close</span>
-        <svg
-          className='w-3 h-3'
-          aria-hidden='true'
-          xmlns='http://www.w3.org/2000/svg'
-          fill='none'
-          viewBox='0 0 14 14'
-        >
-          <path
-            stroke='currentColor'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth='2'
-            d='m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6'
-          />
-        </svg>
-      </button>
     </li>
   );
 };

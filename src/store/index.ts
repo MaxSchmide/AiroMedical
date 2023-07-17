@@ -16,7 +16,7 @@ interface State {
   getInitialBeers: (page?: number) => Promise<void>;
   getBeerById: (beerId: number) => void;
   toggleSelectBeer: (beerId: number) => void;
-  deleteBeerById: () => void;
+  deleteBeerById: () => Promise<void>;
   getNextPageData: () => Promise<void>;
   getPrevPageData: () => Promise<void>;
 }
@@ -69,11 +69,29 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
       }
     },
 
-    deleteBeerById: () => {
+    deleteBeerById: async () => {
       const beers = get().beers;
       const selected = get().selectedBeers;
       const filtered = beers.filter(({ id }) => !selected.includes(id));
-      set({ beers: filtered });
+      const dataToFill = [];
+      const nextPage = get().page + 1;
+
+      try {
+        set({ isNextPending: true });
+        if (filtered.length <= 15) {
+          const { data } = await fetchData(nextPage);
+          dataToFill.push(...data);
+        }
+        set({
+          beers: [...filtered, ...dataToFill],
+          page: nextPage,
+          selectedBeers: selected.filter((id) => !selected.includes(id)),
+        });
+      } catch (error) {
+        set({ isError: true });
+      } finally {
+        set({ isNextPending: false });
+      }
     },
 
     getNextPageData: async () => {

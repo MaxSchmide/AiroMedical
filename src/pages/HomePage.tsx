@@ -2,12 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import BeerList from '../components/BeerList';
 import Loader from '../components/Loader';
 import useBeersStore from '../store';
+import classNames from 'classnames';
 
 const HomePage: React.FC = () => {
   const {
     getInitialBeers,
     getNextPageData,
+    deleteBeerById,
     getPrevPageData,
+    selectedBeers,
     isLoading,
     isError,
   } = useBeersStore();
@@ -50,11 +53,22 @@ const HomePage: React.FC = () => {
           <section
             ref={listRef}
             onScroll={handleScroll}
-            className='w-[26rem] h-[33.125rem] overflow-y-scroll mx-auto'
+            className='relative w-[26rem] h-[33.125rem] overflow-y-scroll mx-auto'
           >
             <BeerList />
           </section>
         )}
+        <button
+          type='button'
+          className={classNames('button__delete', {
+            '!block': selectedBeers.length > 0,
+          })}
+          data-dismiss-target='#toast-default'
+          aria-label='Close'
+          onClick={deleteBeerById}
+        >
+          Delete
+        </button>
       </main>
     </div>
   );
