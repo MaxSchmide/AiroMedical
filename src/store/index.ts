@@ -18,7 +18,7 @@ interface State {
   toggleSelectBeer: (beerId: number) => void;
   deleteBeerById: () => void;
   getNextPageData: () => Promise<void>;
-  getPrevPageData: () => void;
+  getPrevPageData: () => Promise<void>;
 }
 
 const useBeersStore = create<State, [['zustand/devtools', State]]>(
@@ -118,13 +118,14 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
 
       try {
         const beersToFetch = removed.splice(-5);
-        set({ prevBeersIds: removed });
-
         const beersPromises = beersToFetch.map((id) => fetchDataById(id));
 
         const prevBeers = await Promise.all(beersPromises);
 
-        set({ beers: [...prevBeers, ...get().beers] });
+        set({
+          beers: [...prevBeers, ...get().beers],
+          prevBeersIds: removed,
+        });
       } catch (error) {
         set({ isError: true });
       } finally {
