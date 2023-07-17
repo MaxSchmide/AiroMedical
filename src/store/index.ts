@@ -109,7 +109,6 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
     },
 
     getPrevPageData: async () => {
-      set({ isPrevPending: true });
       const removed = get().prevBeersIds;
 
       if (!removed.length) {
@@ -117,6 +116,7 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
       }
 
       try {
+        set({ isPrevPending: true });
         const beersToFetch = removed.splice(-5);
         const beersPromises = beersToFetch.map((id) => fetchDataById(id));
 
