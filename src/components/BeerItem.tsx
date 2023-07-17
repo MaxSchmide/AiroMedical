@@ -10,6 +10,7 @@ type Props = {
 
 const BeerItem: React.FC<Props> = ({ beer }) => {
   const { toggleSelectBeer, selectedBeers, deleteBeerById } = useBeersStore();
+
   const handleSelectBeer = (
     event: React.MouseEvent<HTMLElement>,
     beerId: number
@@ -37,7 +38,7 @@ const BeerItem: React.FC<Props> = ({ beer }) => {
         })}
         data-dismiss-target='#toast-default'
         aria-label='Close'
-        onClick={() => deleteBeerById(beer.id)}
+        onClick={deleteBeerById}
       >
         <span className='sr-only'>Close</span>
         <svg

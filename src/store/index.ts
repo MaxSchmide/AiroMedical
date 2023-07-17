@@ -1,8 +1,7 @@
-import axios from 'axios';
 import { create } from 'zustand';
-import { Beer } from '../models/Beer.model';
 import { devtools } from 'zustand/middleware';
-import { fetchData } from '../utils';
+import { Beer } from '../models/Beer.model';
+import { fetchData, fetchDataById } from '../utils';
 
 interface State {
   beers: Beer[];
@@ -13,9 +12,9 @@ interface State {
   page: number;
   selectedBeers: number[];
   getInitialBeers: (page?: number) => Promise<void>;
-  getBeerById: (id?: number) => Promise<void>;
+  getBeerById: (id: number) => void;
   toggleSelectBeer: (beerId: number) => void;
-  deleteBeerById: (beerId: number) => void;
+  deleteBeerById: () => void;
   getNextPageData: () => Promise<void>;
 }
 
@@ -41,10 +40,10 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
         set({ isLoading: false });
       }
     },
-    getBeerById: async (id?: number) => {
+
+    getBeerById: (id: number) => {
       set({ isLoading: true });
-      axios
-        .get(import.meta.env.VITE_URL + id)
+      fetchDataById(id)
         .then(({ data }) => set({ beerToView: data[0] }))
         .catch(() => set({ isError: true }))
         .finally(() => set({ isLoading: false }));
@@ -59,11 +58,14 @@ const useBeersStore = create<State, [['zustand/devtools', State]]>(
         set({ selectedBeers: [...beers, beerId] });
       }
     },
-    deleteBeerById: (beerId: number) => {
+
+    deleteBeerById: () => {
       const beers = get().beers;
-      const filtered = beers.filter(({ id }) => id !== beerId);
+      const selected = get().selectedBeers;
+      const filtered = beers.filter(({ id }) => !selected.includes(id));
       set({ beers: filtered });
     },
+
     getNextPageData: async () => {
       set({ isPending: true });
       try {

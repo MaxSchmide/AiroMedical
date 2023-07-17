@@ -8,3 +8,5 @@ export const fetchData = (page: number) =>
       page,
     },
   });
+
+export const fetchDataById = (id: number) => axios.get(URL + id);
