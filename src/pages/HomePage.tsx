@@ -21,6 +21,7 @@ const HomePage: React.FC = () => {
 
     if (top) {
       getPrevPageData();
+      listRef.current!.scrollTop = 1;
     }
 
     if (bottom) {
@@ -49,7 +50,7 @@ const HomePage: React.FC = () => {
           <section
             ref={listRef}
             onScroll={handleScroll}
-            className='w-[26rem] h-[33.125rem] overflow-y-scroll mx-auto scroll-smooth'
+            className='w-[26rem] h-[33.125rem] overflow-y-scroll mx-auto'
           >
             <BeerList />
           </section>
